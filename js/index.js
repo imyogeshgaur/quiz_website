@@ -1,32 +1,95 @@
-const getQuestions = async() =>{
-try {
-    const fetchedPromise = await fetch("https://quizapi.io/api/v1/questions?apiKey=VBZr00tzasss60F2bSDvgBUEQd8UXzRiHtk4mxuw&limit=1&tags=JavaScript")
-    const responsePromise = fetchedPromise.json()
-    const data = await responsePromise
-    console.log(data[0].correct_answer);
-    const question = document.getElementById('question')
-    const option1 = document.getElementById('option1');
-    const option2 = document.getElementById('option2');
-    const option3 = document.getElementById('option3');
-    const option4 = document.getElementById('option4');
-    const input4 = document.getElementById('input4');
+const quizDB = [
+  {
+    question: "Q1: What is the Full Form of HTML ?",
+    a: "Hello To My Land",
+    b: "Hey Text Markup Language",
+    c: "HyperText Makeup Language",
+    d: "HyperText Markup Language",
+    ans: "ans4",
+  },
+  {
+    question: "Q2: What is the Full Form of CSS ?",
+    a: "Cascading Style Sheet",
+    b: "Cascading Style Sheep",
+    c: "Cartoon Style Sheet",
+    d: "Cascading Super Sheet",
+    ans: "ans1",
+  },
+  {
+    question: "Q3: What is the Full Form of HTTP ?",
+    a: "HyperText Transfer Product",
+    b: "HyperText Test Protocol",
+    c: "HyperText Transfer Protocol",
+    d: "High Test Protocol",
+    ans: "ans3",
+  },
+  {
+    question: "Q4: What is the Full Form of JS ?",
+    a: "JavaSuper",
+    b: "JavaScript",
+    c: "JustScript",
+    d: "JordernShoes",
+    ans: "ans2",
+  },
+];
 
-    question.innerText = data[0].question;
-    option1.innerText = data[0].answers.answer_a;
-    option2.innerText = data[0].answers.answer_b;
-    option3.innerText = data[0].answers.answer_c;
-    option4.innerText = data[0].answers.answer_d;
+const question = document.querySelector(".question");
+const option1 = document.querySelector("#option1");
+const option2 = document.querySelector("#option2");
+const option3 = document.querySelector("#option3");
+const option4 = document.querySelector("#option4");
+const submit = document.querySelector("#submit");
+const answers = document.querySelectorAll(".answer");
+const showScore = document.querySelector('#showScore')
+
+let questionCount = 0;
+let score = 0;
+
+const loadQuestions = () => {
+  const questionList = quizDB[questionCount];
+
+  question.innerText = questionList.question;
+
+  option1.innerText = questionList.a;
+  option2.innerText = questionList.b;
+  option3.innerText = questionList.c;
+  option4.innerText = questionList.d;
+};
+
+loadQuestions();
+
+const getCheckAnswer = () => {
+  let answer;
+
+  answers.forEach((currentAnsElem) => {
+    if (currentAnsElem.checked) {
+      answer = currentAnsElem.id;
+    }
     
-    if (data[0].answers.answer_c==null) {
-        option3.innerText="None of The Above"
-    }
-    if (data[0].answers.answer_d==null) {
-        option3.innerText="None of The Above"
-        input4.remove();
-    }
-} catch (error) {
-    console.log(error);
+  });
+  return answer;
+};
+
+const deselectAll = () =>{
+    answers.forEach(currentAnsElem=>{currentAnsElem.checked = false })
 }
 
-}
-getQuestions()
+submit.addEventListener("click", () => {
+  const checkedAnswer = getCheckAnswer();
+
+  if(checkedAnswer === quizDB[questionCount].ans){
+      score++;
+  }
+
+  questionCount++;
+  deselectAll();
+
+  if(questionCount < quizDB.length){
+      loadQuestions();
+  }else{
+
+     showScore.innerHTML = `<h3>You Scored ${score}/${quizDB.length}</h3>`;
+
+     showScore.classList.remove('scoreArea');
+  }
+});
